@@ -4,7 +4,7 @@ Rutgers Course Database was developed by David Parsons using Python, SQLite, SQL
 
 The intention of this project is to develop tools for creating, updating, and managing a database of all the Rutgers University Course Data.
 
-## Comming Soon - As of August 2016
+## Coming Soon - As of August 2016
 
 - Developer quick start guide. A How-To guide for building your own instance of the database.
 
