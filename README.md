@@ -13,3 +13,5 @@ The intention of this project is to develop tools for creating, updating, and ma
 - Support for multiple Semesters, Years, and Campuses.
 
 - Integration with Flask to allow for remote queries.
+
+- Updates Optimized for most common Subjects
