@@ -1,0 +1,2 @@
+del *.db
+del *.pyc
