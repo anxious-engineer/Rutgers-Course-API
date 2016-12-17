@@ -25,6 +25,8 @@ with open('Subjects.txt') as sf:
 # Begins iteration over every subject that was imported from the text file.
 for sub in subjects:
 
+	# print "Subject: %s" % sub
+
 	# Generates the url from the Developers API Key and the current subject
 	url = 'http://sis.rutgers.edu/soc/courses.json?subject=' + sub[:3] + '&semester=12017&campus=NB&level=U'
 	#url = 'http://sauron.rutgers.edu/~rfranknj/soc/api.php?key=' + apiKey + '&semester=92016&subj=' + sub[:3] + '&campus=NB&level=U'
@@ -36,6 +38,8 @@ for sub in subjects:
 	# Begins iteration over every course that was in the course json Array.
 	for course in allCourses:
 
+		#print "\tCourse: %s" % course
+
 		# Gets the array of sections for the current course.
 		sections = course['sections']
 
@@ -46,8 +50,11 @@ for sub in subjects:
 		# Begin iteration over every section in the  section json Array.
 		for section in sections:
 
+
 			# Gets the unique index for the current subject
 			INDEX = section['index']
+
+			# print "\t\tSection: %s" % INDEX
 
 			# Looks for the section associated with the current INDEX in the database
 			# return to one with exceptions?
@@ -74,3 +81,5 @@ for sub in subjects:
 
 				# Commits the new Data
 				session.commit()
+
+print "Update Succesful!"

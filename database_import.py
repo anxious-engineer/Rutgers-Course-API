@@ -32,7 +32,7 @@ for sub in subjects:
 	# Generates the url from the Developers API Key and the current subject
 	url = 'http://sis.rutgers.edu/soc/courses.json?subject=' + sub[:3] + '&semester=12017&campus=NB&level=U'
 
-	print url
+	# print url
 
 	# Pulls the json associated with the current subject from the Rutgers Server.
 	with contextlib.closing(urllib.urlopen(url)) as response:
@@ -56,12 +56,12 @@ for sub in subjects:
 		# the Computer Science and Mathematics subjects.
 		TITLE = (course['title'] + ' (' + course['subject'] + ':' + COURSE_NUMBER + ')')
 
-		print '\t' + COURSE_NUMBER + " : " + TITLE
+		# print '\t' + COURSE_NUMBER + " : " + TITLE
 
 		# Makes sure that the current course has not already been created
 		if COURSE_NUMBER not in importedCourses:
 
-			print '\t\t%s' % (COURSE_NUMBER not in importedCourses)
+			#print '\t\t%s' % (COURSE_NUMBER not in importedCourses)
 
 			# Adds the current course to the list of imported courses
 			importedCourses.append(COURSE_NUMBER)
