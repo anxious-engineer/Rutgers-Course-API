@@ -1,5 +1,6 @@
 del *.db
 del *.pyc
+del *.log
 
 python database_setup.py
 

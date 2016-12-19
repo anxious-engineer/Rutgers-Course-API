@@ -3,6 +3,12 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Courses, Sections, MeetingTimes
 from urllib2 import urlopen
 import contextlib, json, urllib
+import logging
+
+LOG_FILENAME = 'update.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+
+logging.info('Update has begun.')
 
 # Creates sqlalchemy engine and binds it to the course database.
 engine = create_engine('sqlite:///rutgerscourses.db')
@@ -10,6 +16,8 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 # Creates database session so that data can be manipulated.
 session = DBSession()
+
+logging.info('Database bound to engine.')
 
 # Reads the list of subject names and numbers from the Subjects.txt file.
 with open('Subjects.txt') as sf:
@@ -37,7 +45,7 @@ while True :
 	totalNewCourseUpdates = 0
 
 	#Prints the current update #
-	print "Update #" + str(totalUpdates)
+	logging.info("\tUpdate #" + str(totalUpdates) + '...')
 
 	# Begins iteration over every subject that was imported from the text file.
 	for sub in subjects:
@@ -90,14 +98,18 @@ while True :
 					# Updates the current section data
 					currentSection.open_status = isOpen
 
-					print course['subject'] + ':' + currentSection.course_number + ':' + currentSection.number + ' Index #' + str(INDEX) + " is now: " + ('open' if isOpen else 'closed')
+					logging.info('\t\t' + course['subject'] + ':' + currentSection.course_number + ':' + currentSection.number + ' Index #' + str(INDEX) + " is now: " + ('open' if isOpen else 'closed'))
 
 					# Adds the update to the session
 					session.add(currentSection)
+
+	logging.info('\t... Update #%s Complete' % str(totalUpdates))
 
 	totalUpdates += 1
 	if needsCommit:
 		# Commits the new Data
 		session.commit()
 
-	print str(totalNewCourseUpdates) + ' of ' + str(totalCourses) + ' Updated.'
+	logging.info('\t\t' + str(totalNewCourseUpdates) + ' of ' + str(totalCourses) + ' Sections Updated.')
+
+logging.info('Update completed.')

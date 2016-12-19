@@ -2,3 +2,7 @@
 *.pyc
 Spring2017Subjects.txt
 problemsubjects.txt
+.ftpconfig
+.gitignore
+.ftpignore
+*.log

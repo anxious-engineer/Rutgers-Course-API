@@ -2,7 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Courses, Sections, MeetingTimes
 from urllib2 import urlopen
-import contextlib, json, urllib
+import contextlib, json, urllib, logging
+
+LOG_FILENAME = 'import.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 # Creates sqlalchemy engine and binds it to the course database.
 engine = create_engine('sqlite:///rutgerscourses.db')
@@ -12,9 +15,13 @@ DBSession = sessionmaker(bind = engine)
 # Creates database session so that data can be manipulated.
 session = DBSession()
 
+logging.info('Database bound to engine.')
+
+logging.info('Reading subjects from \'Subjects.txt\'.')
 # Reads the list of subject names and numbers from the Subjects.txt file.
 with open('Subjects.txt') as sf:
 	subjects = sf.readlines()
+logging.info('File Read')
 
 # # Reads sensative Developer Information from the DeveloperInfo.txt file.
 # with open('DeveloperInfo.txt') as DevFile:
@@ -23,8 +30,12 @@ with open('Subjects.txt') as sf:
 # # Gets the developers Rutgers API Key.
 # apiKey = str(devInfo[0])[9:]
 
+logging.info("Pulling Data....")
+
 # Begins iteration over every subject that was imported from the text file.
 for sub in subjects:
+
+	logging.info("\tGetting %s Data." % sub[:3])
 
 	# Prints the current subject whose data is being pulled.
 	print sub[:3]
@@ -142,5 +153,8 @@ for sub in subjects:
 	try:
 		session.commit()
 	except Exception as ex:
+		logging.warning('\tCommit faild on subject: %s' % sub[:3])
 		session.rollback()
 		print ex.__class__
+
+logging.info('Import Complete')
