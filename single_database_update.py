@@ -11,25 +11,21 @@ DBSession = sessionmaker(bind = engine)
 # Creates database session so that data can be manipulated.
 session = DBSession()
 
-# Reads the list of subject names and numbers from the Subjects.txt file.
-with open('Subjects.txt') as sf:
-	subjects = sf.readlines()
-
-# Reads sensative Developer Information from the DeveloperInfo.txt file.
-# with open('DeveloperInfo.txt') as DevFile:
-	#devInfo = DevFile.readlines()
-
-# Gets the developers Rutgers API Key.
-# apiKey = str(devInfo[0])[9:]
-
 # Begins iteration over every subject that was imported from the text file.
-for sub in subjects:
+for sub in range(0,999):
 
 	# print "Subject: %s" % sub
 
+	if sub < 10 :
+		strSub = '00' + str(sub)
+	elif sub < 100 :
+		strSub = '0' + str(sub)
+	else :
+		strSub = str(sub)
+
 	# Generates the url from the Developers API Key and the current subject
-	url = 'http://sis.rutgers.edu/soc/courses.json?subject=' + sub[:3] + '&semester=12017&campus=NB&level=U'
-	#url = 'http://sauron.rutgers.edu/~rfranknj/soc/api.php?key=' + apiKey + '&semester=92016&subj=' + sub[:3] + '&campus=NB&level=U'
+	url = 'http://sis.rutgers.edu/soc/courses.json?subject=' + strSub + '&semester=12017&campus=NB&level=U'
+	#url = 'http://sauron.rutgers.edu/~rfranknj/soc/api.php?key=' + apiKey + '&semester=92016&subj=' + strSub + '&campus=NB&level=U'
 
 	# Pulls the json associated with the current subject from the Rutgers Server.
 	with contextlib.closing(urllib.urlopen(url)) as response:
@@ -59,6 +55,9 @@ for sub in subjects:
 			# Looks for the section associated with the current INDEX in the database
 			# return to one with exceptions?
 			currentSection = session.query(Sections).filter_by(index = INDEX).first()
+
+			if(currentSection == None) :
+				break;
 
 			# Gets the current Open Status of the current section
 			# print sub + ":" + course + ":" + section

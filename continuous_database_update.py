@@ -5,11 +5,6 @@ from urllib2 import urlopen
 import contextlib, json, urllib
 import logging
 
-LOG_FILENAME = 'update.log'
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
-
-logging.info('Update has begun.')
-
 # Creates sqlalchemy engine and binds it to the course database.
 engine = create_engine('sqlite:///rutgerscourses.db')
 Base.metadata.bind = engine
@@ -17,18 +12,12 @@ DBSession = sessionmaker(bind = engine)
 # Creates database session so that data can be manipulated.
 session = DBSession()
 
-logging.info('Database bound to engine.')
+#logging.info('Database bound to engine.')
 
-# Reads the list of subject names and numbers from the Subjects.txt file.
-with open('Subjects.txt') as sf:
-	subjects = sf.readlines()
+LOG_FILENAME = 'update.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
-# # Reads sensative Developer Information from the DeveloperInfo.txt file.
-# with open('DeveloperInfo.txt') as DevFile:
-# 	devInfo = DevFile.readlines()
-#
-# # Gets the developers Rutgers API Key.
-# apiKey = str(devInfo[0])[9:]
+logging.info('Update has begun.')
 
 # Stores the number of database update attempts.
 totalUpdates = 1;
@@ -48,10 +37,17 @@ while True :
 	logging.info("\tUpdate #" + str(totalUpdates) + '...')
 
 	# Begins iteration over every subject that was imported from the text file.
-	for sub in subjects:
+	for sub in range(0, 999):
+
+		if sub < 10 :
+			strSub = '00' + str(sub)
+		elif sub < 100 :
+			strSub = '0' + str(sub)
+		else :
+			strSub = str(sub)
 
 		# Generates the url from the Developers API Key and the current subject
-		url = 'http://sis.rutgers.edu/soc/courses.json?subject=' + sub[:3] + '&semester=12017&campus=NB&level=U'
+		url = 'http://sis.rutgers.edu/soc/courses.json?subject=' + strSub + '&semester=12017&campus=NB&level=U'
 
 		# Pulls the json associated with the current subject from the Rutgers Server.
 		with contextlib.closing(urllib.urlopen(url)) as response:
