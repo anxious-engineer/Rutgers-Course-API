@@ -1,8 +1,31 @@
+import sqlite3
+
 from rutgers import soc
 
 
 def addCourses(sub):
-    print(sub)
+
+    times = []
+
+    for c in sub.courses:
+        for s in c.sections:
+            for m in s.meetings:
+                times.append((str(sub.number), str(c.title), str(m.campus), str(m.building), str(m.room), str(m.day), str(m.startTime), str(m.endTime)))
+
+    # Creates Connection to Database
+    connection = sqlite3.connect('times.db')
+
+    if connection is not None:
+
+        # Create Table
+        connection.executemany(
+            """INSERT INTO times(subject, course_title, campus_name, building_code, room_number, meeting_day, begin_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            times)
+        connection.commit()
+        connection.close()
+
+    else:
+        print("Error Connecting to times Database.")
 
 
 def readWhitelist():
@@ -10,6 +33,7 @@ def readWhitelist():
     wlist = [line.rstrip('\n') for line in wlfile]
     wlfile.close()
     return wlist
+
 
 # TODO: Generalize Parameters
 # Undergraduate Levels
@@ -32,4 +56,7 @@ for subject in whiteList:
         print(subject + " should be black listed.")
         continue
 
-    print(soc.Subject(subject, subjectJSON))
+    newSub = soc.Subject(subject, subjectJSON)
+
+    addCourses(newSub)
+    print(newSub)

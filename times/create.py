@@ -18,7 +18,8 @@ def create_table(conn, create_table_sql):
 
 # Create Table Statement
 sql_create_index_table = """ CREATE TABLE IF NOT EXISTS times (
-                                id integer PRIMARY KEY,
+                                id integer PRIMARY KEY AUTOINCREMENT,
+                                subject TEXT NOT NULL,
                                 course_title TEXT NOT NULL,
                                 campus_name TEXT,
                                 building_code TEXT,
