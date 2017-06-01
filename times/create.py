@@ -16,28 +16,32 @@ def create_table(conn, create_table_sql):
 # END METHOD DEFINITIONS
 
 
-# Create Table Statement
-sql_create_index_table = """ CREATE TABLE IF NOT EXISTS times (
-                                id integer PRIMARY KEY AUTOINCREMENT,
-                                subject TEXT NOT NULL,
-                                course_title TEXT NOT NULL,
-                                campus_name TEXT,
-                                building_code TEXT,
-                                room_number TEXT,
-                                meeting_day TEXT,
-                                begin_time TEXT,
-                                end_time TEXT
-                            );"""
+def main():
+    # Create Table Statement
+    sql_create_index_table = """ CREATE TABLE IF NOT EXISTS times (
+                                    id integer PRIMARY KEY AUTOINCREMENT,
+                                    subject TEXT NOT NULL,
+                                    course_title TEXT NOT NULL,
+                                    campus_name TEXT,
+                                    building_code TEXT,
+                                    room_number TEXT,
+                                    meeting_day TEXT,
+                                    begin_time TEXT,
+                                    end_time TEXT
+                                );"""
 
-# Creates Connection to Database
-connection = sqlite3.connect('times.db')
+    # Creates Connection to Database
+    connection = sqlite3.connect('times.db')
 
-if connection is not None:
-    # Create Table
-    create_table(connection, sql_create_index_table)
+    if connection is not None:
+        # Create Table
+        create_table(connection, sql_create_index_table)
 
-else:
-    print("Error Connecting to times Database.")
+    else:
+        print("Error Connecting to times Database.")
 
-connection.close()
+    connection.close()
 
+
+if __name__ == '__main__':
+    main()

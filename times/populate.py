@@ -35,28 +35,33 @@ def readWhitelist():
     return wlist
 
 
-# TODO: Generalize Parameters
-# Undergraduate Levels
-LEVEL = 'U'
-# New Brunswick Campus
-CAMPUS = 'NB'
-# Fall Semester for now.
-SEMESTER = '92017'
+def main():
+    # TODO: Generalize Parameters
+    # Undergraduate Levels
+    LEVEL = 'U'
+    # New Brunswick Campus
+    CAMPUS = 'NB'
+    # Fall Semester for now.
+    SEMESTER = '92017'
 
-# TODO : Remove none subject nums
-# Finds subject from 0 to 999
-whiteList = readWhitelist()
-for subject in whiteList:
+    # TODO : Remove none subject nums
+    # Finds subject from 0 to 999
+    whiteList = readWhitelist()
+    for subject in whiteList:
 
-    # Pulls JSON from soc
-    subjectJSON = getJSON(LEVEL, CAMPUS, SEMESTER, subject)
+        # Pulls JSON from soc
+        subjectJSON = getJSON(LEVEL, CAMPUS, SEMESTER, subject)
 
-    # Only add JSON's with courses
-    if(len(subjectJSON) < 1):
-        print(subject + " should be black listed.")
-        continue
+        # Only add JSON's with courses
+        if(len(subjectJSON) < 1):
+            print(subject + " should be black listed.")
+            continue
 
-    newSub = Subject(subject, subjectJSON)
+        newSub = Subject(subject, subjectJSON)
 
-    addCourses(newSub)
-    print(newSub)
+        addCourses(newSub)
+        # print(newSub)
+
+
+if __name__ == '__main__':
+    main()

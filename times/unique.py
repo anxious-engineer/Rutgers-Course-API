@@ -1,5 +1,8 @@
 import sqlite3, json
 
+data = {}
+totalRooms = 0
+
 
 def addRoom(ca, bu, ro):
     global data, totalRooms
@@ -18,71 +21,57 @@ def addRoom(ca, bu, ro):
         totalRooms += 1
 
 
-data = {}
-totalRooms = 0
+def main():
 
-conn = sqlite3.connect('times.db')
+    global data, totalRooms
 
-c = conn.cursor()
+    conn = sqlite3.connect('times.db')
 
-c.execute("SELECT DISTINCT campus_name FROM times")
+    c = conn.cursor()
 
-# print("Unique Campuses")
+    c.execute("SELECT DISTINCT campus_name FROM times")
 
-uCampus = c.fetchall()
-# print(uCampus)
+    # print("Unique Campuses")
 
-for camp in uCampus:
-    if str(camp[0]) == 'None':
-        continue
-    cond = "(campus_name=\'" + str(camp[0]) + "\')"
-    # print(cond)
-    c.execute("SELECT DISTINCT building_code FROM times WHERE {c}".format(c=cond))
+    uCampus = c.fetchall()
+    # print(uCampus)
 
-    uBuild = c.fetchall()
-    # print('\t' + str(uBuild))
-
-    for build in uBuild:
-        if str(build[0]) == 'None':
+    for camp in uCampus:
+        if str(camp[0]) == 'None':
             continue
-        cond = "(campus_name=\'" + str(camp[0]) + "\' AND building_code=\'" + str(build[0]) + "\')"
-        # print('\t' + cond)
-        c.execute("SELECT DISTINCT room_number FROM times WHERE {c}".format(c=cond))
+        cond = "(campus_name=\'" + str(camp[0]) + "\')"
+        # print(cond)
+        c.execute("SELECT DISTINCT building_code FROM times WHERE {c}".format(c=cond))
 
-        uRoom = c.fetchall()
-        # print('\t\t' + str(uRoom))
+        uBuild = c.fetchall()
+        # print('\t' + str(uBuild))
 
-        for room in uRoom:
-            if str(room[0]) == 'None':
+        for build in uBuild:
+            if str(build[0]) == 'None':
                 continue
-            print('%s - %s - %s' % (camp[0], build[0], room[0]))
+            cond = "(campus_name=\'" + str(camp[0]) + "\' AND building_code=\'" + str(build[0]) + "\')"
+            # print('\t' + cond)
+            c.execute("SELECT DISTINCT room_number FROM times WHERE {c}".format(c=cond))
 
-            addRoom(str(camp[0]), str(build[0]), str(room[0]))
+            uRoom = c.fetchall()
+            # print('\t\t' + str(uRoom))
 
-print('%d total rooms found.' % totalRooms)
+            for room in uRoom:
+                if str(room[0]) == 'None':
+                    continue
+                # print('%s - %s - %s' % (camp[0], build[0], room[0]))
 
-with open('../data/uniqueRoomsByCampus&Building.json', 'w') as outfile:
-    json.dump(data, outfile)
+                addRoom(str(camp[0]), str(build[0]), str(room[0]))
 
-# print("Unique Days of Week")
-#
-# r = c.fetchone()
-#
-# while r is not None:
-#     print(r)
-#     r = c.fetchone()
-#
-# c.execute("SELECT DISTINCT building_code FROM times")
-#
-# print("Unique Buildings")
-#
-# r = c.fetchone()
-#
-# while r is not None:
-#     print(r)
-#     r = c.fetchone()
+    print('%d total rooms found.' % totalRooms)
 
-c.close()
+    with open('../data/uniqueRoomsByCampus&Building.json', 'w') as outfile:
+        json.dump(data, outfile)
 
-conn.close()
+    c.close()
 
+    conn.close()
+
+
+if __name__ == '__main__':
+    main()
