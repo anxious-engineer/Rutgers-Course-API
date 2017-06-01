@@ -1,6 +1,6 @@
 import sqlite3
 
-from rutgers import soc
+from rutgers.soc import *
 
 
 def addCourses(sub):
@@ -49,14 +49,14 @@ whiteList = readWhitelist()
 for subject in whiteList:
 
     # Pulls JSON from soc
-    subjectJSON = soc.getJSON(LEVEL, CAMPUS, SEMESTER, subject)
+    subjectJSON = getJSON(LEVEL, CAMPUS, SEMESTER, subject)
 
     # Only add JSON's with courses
     if(len(subjectJSON) < 1):
         print(subject + " should be black listed.")
         continue
 
-    newSub = soc.Subject(subject, subjectJSON)
+    newSub = Subject(subject, subjectJSON)
 
     addCourses(newSub)
     print(newSub)
