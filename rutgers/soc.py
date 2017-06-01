@@ -2,6 +2,7 @@
 
 # TODO: ADD ENUMS or constants for levels, campuses, and/or semesters.
 import urllib, json
+import datetime
 
 
 def getJSON(level, campus, semester, subject):
@@ -34,6 +35,25 @@ def getJSON(level, campus, semester, subject):
 
     return data
 
+def generateTime(time, mCode):
+
+    if time == None:
+        return datetime.time(0, 0, 0)
+
+    tStr = str(time)
+
+    minute = int(tStr[2:])
+
+    hour = int(tStr[:2])
+
+    if hour == 12:
+        hour = 0
+
+    if mCode == 'P':
+        hour += 12
+
+    # print datetime.time(hour, minute, 0)
+    return datetime.time(hour, minute, 0)
 
 # Representation of SOC Subject
 class Subject(object):
@@ -119,6 +139,8 @@ class Meeting(object):
         # Stores meeting room
         self.room = JSON['roomNumber']
 
-        self.startTime = 0
-        self.endTime = 0
+        # Stores day of week
+        self.day = JSON['meetingDay']
 
+        self.startTime = generateTime(JSON['startTime'], JSON['pmCode'])
+        self.endTime = generateTime(JSON['endTime'], JSON['pmCode'])
