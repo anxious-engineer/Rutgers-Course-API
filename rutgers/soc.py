@@ -74,6 +74,14 @@ class Subject(object):
         for c in self.json:
             self.courses.append(Course(c))
 
+    def __str__(self):
+        output = str(self.number)
+
+        for c in self.courses:
+            output += '\n' + str(c)
+
+        return output
+
     # Returns number of courses offered by subject
     def numCourses(self):
         return len(self.courses)
@@ -105,6 +113,14 @@ class Course(object):
         # Stores json object containing Course properties
         self.json = JSON
 
+    def __str__(self):
+        output = str(self.number) + " - " + str(self.title) + " - " + str(self.campusCode)
+
+        for s in self.sections:
+            output += '\n\t' + str(s)
+
+        return output
+
 
 # TODO : Add all JSON fields
 # Representation of SOC Section
@@ -123,6 +139,13 @@ class Section(object):
         for m in JSON['meetingTimes']:
             self.meetings.append(Meeting(m))
 
+    def __str__(self):
+        output = str(self.index)
+
+        for m in self.meetings:
+            output += '\n\t\t' + str(m)
+
+        return output
 
 # TODO : Implement generateTime()
 # TODO : Add all JSON fields
@@ -144,3 +167,6 @@ class Meeting(object):
 
         self.startTime = generateTime(JSON['startTime'], JSON['pmCode'])
         self.endTime = generateTime(JSON['endTime'], JSON['pmCode'])
+
+    def __str__(self):
+        return str(self.campus) + ' - ' + str(self.building) + ' - ' + str(self.room) + ' - ' + str(self.startTime) + ' - ' + str(self.endTime)
