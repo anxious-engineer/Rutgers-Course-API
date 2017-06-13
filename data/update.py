@@ -1,11 +1,11 @@
-from rutgers import soc
+from rutgers.soc import *
 
 # Undergraduate Levels
-LEVEL = 'U'
+LEVELS = ['U', 'G']
 # New Brunswick Campus
 CAMPUS = 'NB'
 # Fall Semester for now.
-SEMESTER = '92017'
+SEMESTERS = ['92016', '12017', '72017', '92017']
 
 # TODO : Add all levels, campuses, and semester values to whitelist
 def updateWhitelist():
@@ -23,15 +23,17 @@ def updateWhitelist():
         else:
             subject = str(num)
 
-        # Pulls JSON from soc
-        subjectJSON = soc.getJSON(LEVEL, CAMPUS, SEMESTER, subject)
+        for sem in SEMESTERS:
+            for lev in LEVELS:
+                # Pulls JSON from soc
+                subjectJSON = soc.getJSON(lev, CAMPUS, sem, subject)
 
-        # Only add JSON's with courses
-        if len(subjectJSON) > 0:
-            print (num)
-            wl = open('whitelist', 'a')
-            wl.write(subject + '\n')
-            wl.close()
+                # Only add JSON's with courses
+                if len(subjectJSON) > 0:
+                    print (num)
+                    wl = open('whitelist', 'a')
+                    wl.write(subject + '\n')
+                    wl.close()
 
 
 
