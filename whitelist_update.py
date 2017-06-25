@@ -10,8 +10,9 @@ SEMESTERS = ['92016', '12017', '72017', '92017']
 # TODO : Add all levels, campuses, and semester values to whitelist
 def updateWhitelist():
 
-    open('whitelist', 'w').close()
+    open('data/whitelist', 'w').close()
 
+    added = []
 
     for num in range(0, 999):
 
@@ -25,13 +26,18 @@ def updateWhitelist():
 
         for sem in SEMESTERS:
             for lev in LEVELS:
+                # Avoid adding the same subject twice
+                if num in added:
+                    continue
                 # Pulls JSON from soc
-                subjectJSON = soc.getJSON(lev, CAMPUS, sem, subject)
+                subjectJSON = getJSON(lev, CAMPUS, sem, subject)
 
                 # Only add JSON's with courses
                 if len(subjectJSON) > 0:
+                    # Update Duplicate Array
+                    added.append(num)
                     print (num)
-                    wl = open('whitelist', 'a')
+                    wl = open('data/whitelist', 'a')
                     wl.write(subject + '\n')
                     wl.close()
 
