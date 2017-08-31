@@ -1,19 +1,9 @@
-# Rutgers Course Database
+# Rutgers Course API
 
-Rutgers Course Database was developed by David Parsons using Python, SQLite, SQLAlchemy, and Rutgers University APIs.
+_REST API for Rutgers University Schedule of Classes Data_
 
-The intention of this project is to develop tools for creating, updating, and managing a database of all the Rutgers University Course Data.
+    * Expands Rutgers SOC API by providing multiple endpoints and concise responses.
+    * Python loaders pull from the existing SOC API, updating and storing the data in Mongo Collections.
+    * Django web app parses GET requests, queries Mongo, and returns the data as a JSON. 
 
-## Coming Soon - As of January 2017
-
-- Developer quick start guide. A How-To guide for building your own instance of the database.
-
-- A more extensive CRUD Library to allow for easier implementation into other projects.
-
-- Support for multiple Semesters, Years, and Campuses.
-
-- Add lighter weight API's for querying specific courses.
-
-- Integration with Flask to allow for remote queries.
-
-- Updates Optimized for most common Subjects
+Developed using Python, Django, MongoDB, Pymongo, and the Rutgers University SOC API.
