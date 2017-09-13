@@ -1,6 +1,7 @@
 import sqlite3
-
-from rutgers.soc import *
+import sys
+sys.path.append('../rutgers')
+from soc import *
 
 
 def addCourses(sub):
