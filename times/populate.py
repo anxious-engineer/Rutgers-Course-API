@@ -43,7 +43,7 @@ def main():
     # New Brunswick Campus
     CAMPUS = 'NB'
     # Fall Semester for now.
-    SEMESTER = '72017'
+    SEMESTER = '12018'
 
     # TODO : Remove none subject nums
     # Finds subject from 0 to 999
