@@ -146,7 +146,7 @@ def main():
 
     print(allTimes)
     with open('../data/12018_NB_U.json', 'w') as outfile:
-        json.dump(allTimes, outfile)
+        json.dump({'times':allTimes}, outfile)
 
 if __name__ == '__main__':
     main()
