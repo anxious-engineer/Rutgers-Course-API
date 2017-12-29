@@ -1,5 +1,6 @@
 import sqlite3
 import sys
+from datetime import datetime, timedelta
 sys.path.append('../rutgers')
 from soc import *
 
@@ -38,41 +39,29 @@ def getSubjects(term, campus, level):
         return sorted([(sub.encode('utf-8')) for sub in ids.keys()])
     return []
 
-def generateTime(time, mCode):
-
-    if time == None:
-        return datetime.time(0, 0, 0)
-
-    tStr = str(time)
-
-    minute = int(tStr[2:])
-
-    hour = int(tStr[:2])
-
-    if hour == 12:
-        hour = 0
-
-    if mCode == 'P':
-        hour += 12
-
-    hour = str(hour) if hour > 9 else '0' + str(hour)
-    minute = str(minute) if minute > 9 else '0' + str(minute)
-
-    # print datetime.time(hour, minute, 0)
-    return hour + ":" + minute
-
 def parseTime(pm_code, start_time, end_time):
     if (not pm_code) or (not start_time) or (not end_time):
         return None
+    start = datetime.datetime.strptime(start_time, '%H%M')
+    end = datetime.datetime.strptime(end_time, '%H%M')
+    if pm_code == 'P' and start.hour != 12:
+        start += timedelta(hours=12)
+        end += timedelta(hours=12)
+
+    if start > end:
+        end += timedelta(hours=12)
+
+
     return {
-        'start' : generateTime(start_time.encode('utf-8'), pm_code.encode('utf-8')),
-        'end' : generateTime(end_time.encode('utf-8'), pm_code.encode('utf-8'))
+        'start' : start.strftime('%H:%M'),
+        'end' : end.strftime('%H:%M')
     }
 
 def scrapeTimes(subjectJSON):
     times = {}
     for course in subjectJSON:
-        course_name = course.get('expandedTitle')
+        course_name = course.get('title')
+        # TODO : Expanded Title?
         sections = course.get('sections')
         if (not course_name) or (not sections):
             continue
@@ -143,6 +132,9 @@ def main():
         #
         # addCourses(newSub)
         # print(newSub)
+
+    # for day in allTimes.keys():
+    #     allTimes[day] = list(set(allTimes.get(day)))
 
     print(allTimes)
     with open('../data/12018_NB_U.json', 'w') as outfile:
