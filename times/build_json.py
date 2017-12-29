@@ -52,10 +52,10 @@ def parseTime(pm_code, start_time, end_time):
         end += timedelta(hours=12)
 
 
-    return {
-        'start' : start.strftime('%H:%M'),
-        'end' : end.strftime('%H:%M')
-    }
+    return (
+        start.strftime('%H:%M'),
+        end.strftime('%H:%M')
+    )
 
 def scrapeTimes(subjectJSON):
     times = {}
@@ -78,11 +78,11 @@ def scrapeTimes(subjectJSON):
                 day = meeting.get('meetingDay')
                 if (not room_number) or (not time) or (not day) or (not building_code):
                     continue
-                new_time = {
-                    'course_name' : course_name.encode('utf-8').strip(),
-                    'room' : building_code.encode('utf-8') + '-' + room_number.encode('utf-8'),
-                }
-                new_time.update(time)
+                new_time = (
+                    building_code.encode('utf-8') + '-' + room_number.encode('utf-8'),
+                    course_name.encode('utf-8').strip()
+                )
+                new_time += time
 
                 day = day.encode('utf-8')
 
@@ -96,7 +96,7 @@ def scrapeTimes(subjectJSON):
 def main():
     # TODO: Generalize Parameters
     # Undergraduate Levels
-    LEVEL = 'U'
+    LEVELS = ('U', "G")
     # New Brunswick Campus
     CAMPUS = 'NB'
     # Fall Semester for now.
@@ -106,35 +106,37 @@ def main():
 
     # TODO : Remove none subject nums
     # Finds subject from 0 to 999
-    subjects = getSubjects(SEMESTER, CAMPUS, LEVEL)
     whiteList = []
     allTimes = {}
-    for subject in subjects:
+    for LEVEL in LEVELS:
+        subjects = getSubjects(SEMESTER, CAMPUS, LEVEL)
+        for subject in subjects:
 
-        # Pulls JSON from soc
-        subjectJSON = getJSON(LEVEL, CAMPUS, SEMESTER, subject)
+            # Pulls JSON from soc
+            subjectJSON = getJSON(LEVEL, CAMPUS, SEMESTER, subject)
 
-        # Only add JSON's with courses
-        print(subject)
-        if(len(subjectJSON) < 1):
-            print(subject + " should be black listed.")
-            continue
+            # Only add JSON's with courses
+            print(subject)
+            if(len(subjectJSON) < 1):
+                print(subject + " should be black listed.")
+                continue
 
-        newTimes = scrapeTimes(subjectJSON)
-        # print(newTimes)
-        for day in newTimes.keys():
-            if allTimes.get(day):
-                allTimes[day].extend(newTimes[day])
-            else:
-                allTimes[day] = []
-                allTimes[day].extend(newTimes[day])
-        # newSub = Subject(subject, subjectJSON)
-        #
-        # addCourses(newSub)
-        # print(newSub)
+            newTimes = scrapeTimes(subjectJSON)
+            # print(newTimes)
+            for day in newTimes.keys():
+                if allTimes.get(day):
+                    allTimes[day].extend(newTimes[day])
+                else:
+                    allTimes[day] = []
+                    allTimes[day].extend(newTimes[day])
+            # newSub = Subject(subject, subjectJSON)
+            #
+            # addCourses(newSub)
+            # print(newSub)
 
-    # for day in allTimes.keys():
-    #     allTimes[day] = list(set(allTimes.get(day)))
+    for day in allTimes.keys():
+        print(allTimes[day])
+        allTimes[day] = list(set(allTimes.get(day)))
 
     print(allTimes)
     with open('../data/12018_NB_U.json', 'w') as outfile:
