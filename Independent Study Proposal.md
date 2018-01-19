@@ -9,6 +9,8 @@ There currently exists one API for accessing Rutgers Universty Schedule of Class
 
 The currenty SOC API does not provide allow for any querying and the data returned contains lots of empty fields, in general is not the easiest to understand, and is some cases uneccesarily duplicates information.
 
+Link to current SOC API Endpoint which provides data for Spring 2018 Undergraduate CS Courses: http://sis.rutgers.edu/oldsoc/courses.json?subject=198&semester=12018&campus=NB&level=UG
+
 This makes it very difficult for Developers to find, understand, and use this API, and provides a tremendous barrier to anyone who wants to use this information to create a program or tool for themselves or for the University.
 
 The aim of my project (currently named the Rutgers Course API), is to overcome all of these issues by providing a publicily available, well documented, and rich versions of the SOC API.
@@ -30,7 +32,7 @@ My use of this framework and the AWS technology can be demonstrated here which f
       - [RDS] Returns Query Data to AWS Lambda
     - [Lambda] Formats and Returns Data from RDS to API Gateway
   - [API Gateway] Packages and Returns Data from Lambda Call to API Call (API Response)    
-  
+
 [User] API Data Recived
 
 This project and design yeild itself to the following areas to study throughout its design and development.
