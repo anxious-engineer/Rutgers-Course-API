@@ -17,3 +17,14 @@ __Goal__ : Recreate current SOC API, with a server-less architecture.
 *Step 6* - Correctly Configure API to avoid COORS issue.
 
 *Step 7* - Deploy PoC to production.
+
+## Dependencies
+
+- Python 3
+- Boto3 (AWS SDK for Python)
+
+
+## DynamoDB
+
+__Primary Key__ (*Partition Key*):    
+`<Subject>-<Semester>-<Campus>-<Level>`
