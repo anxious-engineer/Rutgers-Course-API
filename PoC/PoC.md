@@ -22,6 +22,7 @@ __Goal__ : Recreate current SOC API, with a server-less architecture.
 
 - Python 3
 - Boto3 (AWS SDK for Python)
+- PyMongo
 
 
 ## DynamoDB
