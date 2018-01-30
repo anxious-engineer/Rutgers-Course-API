@@ -25,3 +25,11 @@
 **Time Frames**
 
 **Meetings**
+
+## Meeting Notes
+
+PoC - Completed by 2/6
+
+Aim to have final project completed by 5/1
+
+Can get funding for server up-time from department when required.
