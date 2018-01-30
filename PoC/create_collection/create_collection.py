@@ -1,6 +1,7 @@
 import pymongo
 import argparse, sys
 
+# TODO : HIDE & MODULARIZE
 PASSWORD = "makingausableapi"
 uri = "mongodb+srv://rcapi-admin:" + PASSWORD + "@rcapi-f8yp4.mongodb.net/test"
 DB = "PoC"
@@ -33,10 +34,15 @@ def attempt_creation(client, coll_name):
     else:
         print("Creating %s in %s DB!" % (coll_name, DB))
 
-    new_coll = PoC_DB[coll_name]
+    new_coll = PoC_DB.create_collection(coll_name)
 
     print(new_coll)
 
+    # Add Data
+    for i in range(100):
+        new_coll.insert({"msg" : i})
+
+    print(new_coll.count())
 
 def main():
     # Get CLI Args passed to script

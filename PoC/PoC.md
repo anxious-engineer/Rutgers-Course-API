@@ -25,7 +25,15 @@ __Goal__ : Recreate current SOC API, with a server-less architecture.
 - PyMongo
 
 
-## DynamoDB
+## MongoDB
 
-__Primary Key__ (*Partition Key*):    
-`<Subject>-<Semester>-<Campus>-<Level>`
+PoC Collection Documents:
+```json
+{
+  "subject" : 198,
+  "semester" : 12018,
+  "campus" : "NB",
+  "level" : "UG",
+  "data" : {}
+}
+```
