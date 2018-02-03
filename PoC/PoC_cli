@@ -1,0 +1,1 @@
+mongo "mongodb://rcapi-shard-00-00-f8yp4.mongodb.net:27017,rcapi-shard-00-01-f8yp4.mongodb.net:27017,rcapi-shard-00-02-f8yp4.mongodb.net:27017/test?replicaSet=RCAPI-shard-0" --ssl --authenticationDatabase admin --username rcapi-admin --password makingausableapi
