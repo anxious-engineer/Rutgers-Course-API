@@ -1,0 +1,47 @@
+# !/bin/bash
+# exec > /dev/null 2>&1
+
+lambda_path=$1
+echo $lambda_path
+
+lambda_name=$(basename $lambda_path)
+
+# Create Deployement Package
+
+deployment_dir=deploy/tmp/
+
+cp -a $lambda_path/. $deployment_dir
+cp -a dependencies/. $deployment_dir
+
+cd $deployment_dir
+tmp_zip_path=../$lambda_name.zip
+rm $tmp_zip_path
+
+zip -r $tmp_zip_path *
+
+cd ../../
+rm -r $deployment_dir
+
+zip_path=deploy/$lambda_name.zip
+
+# Get current lambda functions from aws
+func_names=$(python get_lambda_function_names.py)
+
+# Determine if the current function being created exists
+lamb_exists=false
+for func in $func_names
+do
+  # echo $func
+  if [ "$func" == "$lambda_name" ]; then
+    lamb_exists=true
+  fi
+done
+# echo $lamb_exists
+
+if [ "$lamb_exists" = true ]; then
+  aws lambda update-function-code --function-name $lambda_name --zip-file fileb://$zip_path
+  echo 'Updated:' $lambda_name
+else
+  aws lambda create-function --function-name $lambda_name --runtime "python3.6" --role "arn:aws:iam::384048673514:role/PoC_Hook" --handler "$lambda_name.api_handler" --zip-file fileb://$zip_path
+  echo 'Created:' $lambda_name
+fi
