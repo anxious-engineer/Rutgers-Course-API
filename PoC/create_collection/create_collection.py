@@ -9,7 +9,7 @@ PoC_LEVELS = ["UG", "G"]
 
 # TODO : HIDE & MODULARIZE
 PASSWORD = "makingausableapi"
-uri = "mongodb+srv://rcapi-admin:" + PASSWORD + "@rcapi-f8yp4.mongodb.net/test"
+uri = "mongodb+srv://admin:" + PASSWORD + "@poc-5vbvd.mongodb.net/test"
 DB = "PoC"
 
 def get_args():
