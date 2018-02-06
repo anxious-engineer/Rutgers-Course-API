@@ -12,8 +12,6 @@ PoC Completed - Not fully tested
 https://7cpgmnapaf.execute-api.us-east-1.amazonaws.com/PoC?subject=198&semester=12018&campus=NB&level=UG
 http://sis.rutgers.edu/oldsoc/courses.json?subject=198&semester=12018&campus=NB&level=UG
 
-**None vs null**
-
 **Paid Cluster**    
 Provides Several Useful tools like GUI to view Data.   
 Connection Statistics, etc, privatizes data.   
@@ -33,5 +31,12 @@ Does this work for 111
 
 **Dependency Management**
 
+**Python Dependency Management Framework**
 
 ## Meeting Notes
+
+Fully Validate PoC
+
+Database Design
+
+Pick Some Base Endpoints
