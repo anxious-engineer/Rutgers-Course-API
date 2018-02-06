@@ -1,5 +1,6 @@
 import sys
 import pymongo
+import json
 
 # AWS Lambda Function that handles method triggers from the API Gateway.
 # Specifically used in the RU CAPI PoC
@@ -36,7 +37,7 @@ def api_handler(event, context):
         "statusCode": 200,
         "headers": {
         },
-        "body": str(body),
+        "body": json.dumps(body, separators=(',',':')),
         "isBase64Encoded": False
     };
     return response
