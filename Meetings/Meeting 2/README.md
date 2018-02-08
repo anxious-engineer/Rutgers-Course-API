@@ -1,5 +1,7 @@
 # Meeting 2
 
+[Meetings](../)
+
 ## Concerns
 
 **From Meeting 1**

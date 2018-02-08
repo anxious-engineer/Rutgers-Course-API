@@ -1,8 +1,9 @@
 # Rutgers Course API
-# David Parsons Spring 2018 Independent Study Proposal
 
-[PoC](PoC/)
-[Meetings](Meetings/)
+[PoC](PoC/)   
+[Meetings](Meetings/)    
+
+# David Parsons Spring 2018 Independent Study Proposal
 
 ## Object
   Create a server-less and developer friendly version of the Rutgers Schedule of Classes (SOC) API.

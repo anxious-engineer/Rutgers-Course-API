@@ -1,5 +1,7 @@
 # Meeting 1
 
+[Meetings](../)   
+
 ## Concerns
 
 **Database**
