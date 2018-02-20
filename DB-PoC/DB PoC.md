@@ -4,8 +4,43 @@ The second step of my work on this project is to complete a very rough proof of 
 
 __Goal__ : Create API with 3 endpoints: Course, Professor, & Campus
 
-*Step 1* - 
+*Step 1* -
 
 *Step 2* -
 
 *Step 3* -
+
+
+## Schema
+**Course**
+```JSON
+{
+  "__professor__" : [],
+  "__campus__" : [],
+  "courseNumber" : "",
+  "synopsisUrl" : "",
+  "title" : "",
+  "courseDescription" : "",
+  "preReqNotes" : "",
+  "credits" : "",
+  "courseNotes" : "",
+  "expandedTitle" : "",
+}
+```
+**Professor**
+```JSON
+{
+  "__course__" : [],
+  "__campus__" : [],
+  "name" : "",
+}
+```
+**Campus**
+```JSON
+{
+  "__course__" : [],
+  "__professor__" : [],
+  "name" : "",
+  "code" : "",
+}
+```
