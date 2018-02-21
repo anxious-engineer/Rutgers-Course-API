@@ -1,6 +1,9 @@
 #!/usr/bin/python3
+import sys, os
+sys.path.append(os.path.abspath('../'))
+from rusoc import api as soc
 import pymongo
-import argparse, sys
+import argparse
 import urllib.request, json
 
 # CONSTANTS FOR PoC
@@ -20,35 +23,6 @@ def get_args():
     # parse the input
     args = vars(parser.parse_args())
     return args
-
-# Gets a clean JSON or nothing
-def get_clean_JSON(requestURL):
-    response = urllib.request.urlopen(requestURL).read()
-    data = json.loads(response)
-    return data
-
-# Gets JSON represeting Course data for given params from SOC API
-def get_subject_course_data(SEMSTER, CAMPUS, LEVEL, SUBJECT):
-    # Populate with
-    url = "http://sis.rutgers.edu/oldsoc/courses.json?subject=" + SUBJECT + "&semester=" + SEMSTER + "&campus=" + CAMPUS + "&level=" +  LEVEL
-    data = get_clean_JSON(url)
-    return data
-
-# Gets JSON of subjects from SOC API
-def get_subject_dict(SEMSTER, CAMPUS, LEVEL):
-    # sub_code : sub_desc
-    subjects = {}
-    # Populate with
-    url = "http://sis.rutgers.edu/oldsoc/subjects.json?semester=" + SEMSTER + "&campus=" + CAMPUS + "&level=" +  LEVEL
-    data = get_clean_JSON(url)
-
-    # Build Subject Dict from Data
-    for sub_dict in data:
-        sub_code = sub_dict.get("code")
-        sub_desc = sub_dict.get("description")
-        subjects[sub_code] = sub_desc
-
-    return subjects
 
 def parse_course(data):
     keys = [
@@ -117,33 +91,29 @@ def parse_campus(data):
 def populate_database(client, db):
     # Gather Data
 
+    all_urls = soc.get_all_current_course_urls()
 
-    # Get and Push Data for each subject, campus, level
-    # NOTE : THIS WILL TAKE A WHILE, COULD BE MULTI-THREADED
-    # THOUGH NOT SURE HOW THE CONNECTIONS WOULD WORK WITH MULTIPLE THREADS
+    for url in all_urls:
+        # GET DATA
+        data = soc.get_clean_JSON(url)
 
-    for campus in PoC_CAMPUSES:
-        for level in PoC_LEVELS:
-            print("CAMPUS: %s | LEVEL: %s" % (campus, level))
-            # Get Subjects
-            subject_dict = get_subject_dict(PoC_SEMESTER, campus, level)
-            subject_list = subject_dict.keys()
-            for subject in subject_list:
-                # GET DATA
-                print("\tGetting data for %s - %s" % (subject, subject_dict.get(subject, "Unknown")))
-                data = get_subject_course_data(PoC_SEMESTER, campus, level, subject)
+        courses = parse_course(data)
+        if len(courses) > 0:
+            db['course'].insert(courses)
+        else:
+            print(url)
+        # print("\tPushed %d courses" % len(courses))
 
-                courses = parse_course(data)
-                db['course'].insert(courses)
-                print("\tPushed %d courses, from %s - %s" % (len(courses), subject, subject_dict.get(subject, "Unknown")))
+        professors = parse_professor(data)
+        if len(professors) > 0:
+            db['professor'].insert(professors)
+        else:
+            print(url)
+        # print("\tPushed %d professors" % len(professors))
 
-                professors = parse_professor(data)
-                db['professor'].insert(professors)
-                print("\tPushed %d professors, from %s - %s" % (len(professors), subject, subject_dict.get(subject, "Unknown")))
-
-                # campuses = parse_campus(data)
-                # db['campus'].insert(campuses)
-                # print("\tPushed %d campuses, from %s - %s" % (len(campuses), subject, subject_dict.get(subject, "Unknown")))
+            # campuses = parse_campus(data)
+            # db['campus'].insert(campuses)
+            # print("\tPushed %d campuses, from %s - %s" % (len(campuses), subject, subject_dict.get(subject, "Unknown")))
 
 def attempt_creation(client, db_name):
     # Create PoC DB if neccesary

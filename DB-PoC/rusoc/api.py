@@ -1,5 +1,6 @@
 import urllib.request, json
 from datetime import datetime
+import time
 
 # Campus Abbreviations used in API calls.
 # TODO : Add Validation for Other Campuses
@@ -97,15 +98,21 @@ def get_all_current_course_urls():
 
 # Gets a clean JSON or nothing
 def get_clean_JSON(requestURL):
-    response = urllib.request.urlopen(requestURL).read()
-    data = json.loads(response)
+    ATTEMPTS = 10
+    data = []
+    while ATTEMPTS > 0:
+        response = urllib.request.urlopen(requestURL).read()
+        data = json.loads(response)
+        if len(data) > 0:
+            return data
+        time.sleep(1)
+        ATTEMPTS -= 1
     return data
 
 # Get list of Subjects from Subject URL
 def get_subject_list_from_url(requestURL):
     # Gets a clean JSON or nothing
     data = get_clean_JSON(requestURL)
-    # sub_code : sub_desc
     subjects = []
 
     # Build Subject Dict from Data
