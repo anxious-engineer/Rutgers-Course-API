@@ -101,7 +101,11 @@ def get_clean_JSON(requestURL):
     ATTEMPTS = 10
     data = []
     while ATTEMPTS > 0:
-        response = urllib.request.urlopen(requestURL).read()
+        data = []
+        try:
+            response = urllib.request.urlopen(requestURL).read()
+        except:
+            pass
         data = json.loads(response)
         if len(data) > 0:
             return data
