@@ -17,13 +17,14 @@ __Goal__ : Create API with 3 endpoints: Course, Professor, & Campus
 {
   "__professor__" : [],
   "__campus__" : [],
-  "courseNumber" : "",
+  "__subject__" : "",
+  "number" : "",
   "synopsisUrl" : "",
   "title" : "",
-  "courseDescription" : "",
+  "description" : "",
   "preReqNotes" : "",
   "credits" : "",
-  "courseNotes" : "",
+  "notes" : "",
   "expandedTitle" : "",
 }
 ```
@@ -32,6 +33,7 @@ __Goal__ : Create API with 3 endpoints: Course, Professor, & Campus
 {
   "__course__" : [],
   "__campus__" : [],
+  "__subject__" : [],
   "name" : "",
 }
 ```
@@ -40,7 +42,18 @@ __Goal__ : Create API with 3 endpoints: Course, Professor, & Campus
 {
   "__course__" : [],
   "__professor__" : [],
+  "__subject__" : [],
   "name" : "",
+  "code" : "",
+}
+```
+**Subject**
+```JSON
+{
+  "__course__" : [],
+  "__professor__" : [],
+  "__campus__" : [],
+  "number" : "",
   "code" : "",
 }
 ```
