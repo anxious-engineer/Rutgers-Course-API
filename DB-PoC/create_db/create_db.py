@@ -35,13 +35,42 @@ def parse_course(data):
     "courseNotes",
     "expandedTitle"]
 
+    key_map = {
+        "courseNumber" : "number",
+        "courseDescription" : "description",
+        "courseNotes" : "notes",
+    }
+
     new_docs = []
 
     for d in data:
         new_doc = {}
         for key in keys:
             if d[key]:
-                new_doc[key] = d[key]
+                new_key = key_map.get(key) if key_map.get(key) else key
+                new_doc[new_key] = d[key]
+
+        if not new_doc is {}:
+            new_docs.append(new_doc)
+
+    return new_docs
+
+
+def parse_subject(data):
+    keys = ["subject"]
+
+    key_map = {
+        "subject" : "number",
+    }
+
+    new_docs = []
+
+    for d in data:
+        new_doc = {}
+        for key in keys:
+            if d[key]:
+                new_key = key_map.get(key) if key_map.get(key) else key
+                new_doc[new_key] = d[key]
 
         if not new_doc is {}:
             new_docs.append(new_doc)
@@ -72,7 +101,17 @@ def parse_professor(data):
     return new_docs
 
 def parse_campus(data):
-    keys = ["name", "code"]
+    keys = ["campusCode"]
+    key_map = {
+        'campusCode' : 'code'
+    }
+    code_to_name = {
+        'NB' : 'New Brunswick',
+        'NK' : 'Newark',
+        'CM' : 'Camden',
+        'OC' : 'Off Campus',
+        'ON' : 'Online'
+    }
 
     new_docs = []
 
@@ -80,7 +119,12 @@ def parse_campus(data):
         new_doc = {}
         for key in keys:
             if d[key]:
-                new_doc[key] = d[key]
+                new_key = key_map.get(key) if key_map.get(key) else key
+                new_doc[new_key] = d[key]
+                if key == 'campusCode':
+                    new_key = 'name'
+                    if code_to_name.get(d[key]):
+                        new_doc[new_key] = code_to_name.get(d[key])
 
         if not new_doc is {}:
             new_docs.append(new_doc)
@@ -93,27 +137,54 @@ def populate_database(client, db):
 
     all_urls = soc.get_all_current_course_urls()
 
-    for url in all_urls:
-        # GET DATA
-        data = soc.get_clean_JSON(url)
+    attempts = 5
 
-        courses = parse_course(data)
-        if len(courses) > 0:
-            db['course'].insert(courses)
-        else:
-            print(url)
-        # print("\tPushed %d courses" % len(courses))
+    while attempts > 0:
+        print("Attempts Remaing %d" % attempts)
+        count = 0
+        failed = 0
+        total = len(all_urls)
+        failures = []
+        for url in all_urls:
+            print("\r%d of %d Complete | %d Failures | Current -> %s" % (count, total, failed, url), end='')
+            # GET DATA
+            data = soc.get_clean_JSON(url)
 
-        professors = parse_professor(data)
-        if len(professors) > 0:
-            db['professor'].insert(professors)
-        else:
-            print(url)
-        # print("\tPushed %d professors" % len(professors))
+            if len(data) == 0:
+                failed += 1
+                failures.append(url)
+            else:
+                subjects = parse_subject(data)
+                if len(subjects) > 0:
+                    db['subject'].insert(subjects)
+                # else:
+                #     print('\r' + url)
 
-            # campuses = parse_campus(data)
-            # db['campus'].insert(campuses)
-            # print("\tPushed %d campuses, from %s - %s" % (len(campuses), subject, subject_dict.get(subject, "Unknown")))
+                courses = parse_course(data)
+                if len(courses) > 0:
+                    db['course'].insert(courses)
+                # else:
+                #     print('\r' + url)
+                # print("\tPushed %d courses" % len(courses))
+
+                professors = parse_professor(data)
+                if len(professors) > 0:
+                    db['professor'].insert(professors)
+                # else:
+                #     print('\r' + url)
+
+                campuses = parse_campus(data)
+                if len(campuses) > 0:
+                    db['campus'].insert(campuses)
+                # else:
+                #     print('\r' + url)
+            count+=1
+            # print("\tPushed %d professors" % len(professors))
+        all_urls = failures
+        attempts -= 1
+
+    print(all_urls)
+
 
 def attempt_creation(client, db_name):
     # Create PoC DB if neccesary
