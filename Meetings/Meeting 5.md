@@ -8,6 +8,9 @@ Wrote a helper python module that has various utilities for interacting with the
   - Directly Interacts with the API, so the user just asks for the JSON they want without having to do any web requesting themselves
   - Current API attempts to collect a url 10 times before giving up.
 
+**OB** Campus Code?
+**ON** Online Code?
+**OC** Off Campus Code?
 
 **Data Collection**
   - Issue with some urls failing, when they have valid data
@@ -19,6 +22,13 @@ Collection is incredibly slow at the current rate, with the API sleeping to atte
 
   - Still need to Handle Duplicates
   - Consider Splitting Professors Names, **only add last name**
+
+Added Subject so that Course can be matched correctly
+
+106 Failures on First Attempt - Consistently
+ - Added 5 rounds of attempts
+
+Still need to add db links
 
 111
   - Methods on Exam
