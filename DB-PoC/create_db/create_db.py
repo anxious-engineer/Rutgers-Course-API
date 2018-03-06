@@ -24,7 +24,7 @@ def get_args():
     args = vars(parser.parse_args())
     return args
 
-def parse_course(data):
+def extract_course(d):
     keys = [
     "courseNumber",
     "synopsisUrl",
@@ -41,41 +41,29 @@ def parse_course(data):
         "courseNotes" : "notes",
     }
 
-    new_docs = []
+    new_doc = {}
+    for key in keys:
+        if d[key]:
+            new_key = key_map.get(key) if key_map.get(key) else key
+            new_doc[new_key] = d[key]
 
-    for d in data:
-        new_doc = {}
-        for key in keys:
-            if d[key]:
-                new_key = key_map.get(key) if key_map.get(key) else key
-                new_doc[new_key] = d[key]
-
-        if not new_doc is {}:
-            new_docs.append(new_doc)
-
-    return new_docs
+    return new_doc
 
 
-def parse_subject(data):
+def extract_subject(d):
     keys = ["subject"]
 
     key_map = {
         "subject" : "number",
     }
 
-    new_docs = []
+    new_doc = {}
+    for key in keys:
+        if d[key]:
+            new_key = key_map.get(key) if key_map.get(key) else key
+            new_doc[new_key] = d[key]
 
-    for d in data:
-        new_doc = {}
-        for key in keys:
-            if d[key]:
-                new_key = key_map.get(key) if key_map.get(key) else key
-                new_doc[new_key] = d[key]
-
-        if not new_doc is {}:
-            new_docs.append(new_doc)
-
-    return new_docs
+    return new_doc
 
 def parse_professor(data):
     keys = ["name"]
@@ -131,13 +119,23 @@ def parse_campus(data):
 
     return new_docs
 
+def upsert(collection, doc):
+    tar = collection.count(doc)
+    if tar == 0:
+        collection.insert(doc)
+        return
+    tar = collection.find(doc)[0]
+    return {"_id" : tar["_id"]}
+
 # POPULATES a database with the JSON Data
 def populate_database(client, db):
     # Gather Data
 
     all_urls = soc.get_all_current_course_urls()
 
-    attempts = 5
+    attempts = 1
+
+    fails = open('fails', 'w')
 
     while attempts > 0:
         print("Attempts Remaing %d" % attempts)
@@ -152,21 +150,35 @@ def populate_database(client, db):
 
             if len(data) == 0:
                 failed += 1
+                fails.writelines(url + '\n')
                 failures.append(url)
             else:
-                subjects = parse_subject(data)
-                if len(subjects) > 0:
-                    db['subject'].insert(subjects)
-                # else:
-                #     print('\r' + url)
+                # Parse data
+                for c in data:
+                    references = {
+                        "__professor__" : [],
+                        "__campus__" : [],
+                        "__subject__" : "",
+                        "__course__" : []
+                    }
+                    # Get and insert Subject
+                    sub_doc = extract_subject(c)
+                    if not sub_doc:
+                        continue
+                    # Add subject if new
+                    sub_doc = upsert(db['subject'], sub_doc)
+                    references['__subject__'] = sub_doc
+                    # Get and insert course
+                    c_doc = extract_course(c)
+                    if not c_doc:
+                        continue
+                    c_doc = upsert(db['course'], c_doc)
+                    references['__course__'] = c_doc
 
-                courses = parse_course(data)
-                if len(courses) > 0:
-                    db['course'].insert(courses)
-                # else:
-                #     print('\r' + url)
-                # print("\tPushed %d courses" % len(courses))
-
+                    # Get and insert Professor
+                    # Get and insert Campus
+                    # Update References
+                    update_references(references)
                 professors = parse_professor(data)
                 if len(professors) > 0:
                     db['professor'].insert(professors)
@@ -184,6 +196,7 @@ def populate_database(client, db):
         attempts -= 1
 
     print(all_urls)
+    fails.close()
 
 
 def attempt_creation(client, db_name):
