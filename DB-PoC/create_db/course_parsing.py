@@ -115,7 +115,9 @@ def parse_course_data(all_data):
 
     for course in all_data:
         print(course['courseNumber'])
+        local_refs = {}
         for name, c_mapping in collection_mappings.items():
+            local_refs[name] = []
             # Current data we parse is always starts as just the current course json
             current_data = [course]
             print("\t" + name)
@@ -134,18 +136,27 @@ def parse_course_data(all_data):
                     current_data = list(tmp_data)
             # print(current_data)
             for data in current_data:
+                new_doc = {}
                 for key in c_mapping['keys']:
                     name_update_mapping = c_mapping['keys'].get(key)
                     if name_update_mapping:
                         new_key = key if not name_update_mapping.get('new_key') else name_update_mapping['new_key']
                         output_val = data[key] if not name_update_mapping.get('value_mappings') else name_update_mapping['value_mappings'].get(data[key])
+                        new_doc[new_key] = output_val
                         print("\t\t %s : %s" % (new_key, output_val))
                         if name_update_mapping.get('augmented_keys'):
                             for augmented_key in name_update_mapping.get('augmented_keys'):
+                                new_doc[augmented_key] = data[key]
                                 print("\t\t %s : %s" % (augmented_key, data[key]))
                     else:
+                        new_doc[key] = data[key]
                         print("\t\t %s : %s" % (key, data[key]))
+                local_refs[name].append(new_doc)
+        push_course_data_to_db(local_refs)
 
+def push_course_data_to_db(local_refs):
+    # ('__%s__' % name)
+    print(json.dumps(local_refs, indent=4))
 
 # Test Parsing Code
 def test_course_parsing():
