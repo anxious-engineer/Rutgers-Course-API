@@ -5,9 +5,9 @@ from rusoc import api as soc
 import db_connect
 import json
 
-# Globals
+# TEST Globals
 client = db_connect.get_client()
-test_db_name = "parse"
+test_db_name = "test"
 if test_db_name in client.database_names():
     client.drop_database(test_db_name)
 db = client[test_db_name]
@@ -202,8 +202,8 @@ def merge_references(new_refs, old_doc):
     for ref_name in new_refs:
         new_db_refs[('__%s__' % ref_name)] = list(new_refs[ref_name])
     output_refs = {}
-    for ref_name in new_refs:
-        output_refs[ref_name] = old_doc.get(ref_name, []) + list(set(new_refs.get(ref_name, [])) - set(old_doc.get(ref_name, [])))
+    for ref_name in new_db_refs:
+        output_refs[ref_name] = old_doc.get(ref_name, []) + list(set(new_db_refs.get(ref_name, [])) - set(old_doc.get(ref_name, [])))
     return output_refs
 
 def push_course_data_to_db(local_refs):
