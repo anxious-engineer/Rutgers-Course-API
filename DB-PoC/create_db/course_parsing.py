@@ -8,6 +8,8 @@ import json
 # Globals
 client = db_connect.get_client()
 test_db_name = "parse"
+if test_db_name in client.database_names():
+    client.drop_database(test_db_name)
 db = client[test_db_name]
 
 # Mappings
@@ -143,20 +145,71 @@ def parse_course_data(all_data):
                         new_key = key if not name_update_mapping.get('new_key') else name_update_mapping['new_key']
                         output_val = data[key] if not name_update_mapping.get('value_mappings') else name_update_mapping['value_mappings'].get(data[key])
                         new_doc[new_key] = output_val
-                        print("\t\t %s : %s" % (new_key, output_val))
+                        # print("\t\t %s : %s" % (new_key, output_val))
                         if name_update_mapping.get('augmented_keys'):
                             for augmented_key in name_update_mapping.get('augmented_keys'):
                                 new_doc[augmented_key] = data[key]
-                                print("\t\t %s : %s" % (augmented_key, data[key]))
+                                # print("\t\t %s : %s" % (augmented_key, data[key]))
                     else:
                         new_doc[key] = data[key]
-                        print("\t\t %s : %s" % (key, data[key]))
+                        # print("\t\t %s : %s" % (key, data[key]))
                 local_refs[name].append(new_doc)
         push_course_data_to_db(local_refs)
 
+def update_references(relatives):
+    print("RELATIVES: %s" % relatives)
+    for coll, v in relatives.items():
+        # Copy Dict
+        refs = relatives.copy()
+        # Remove coll
+        refs.pop(coll, None)
+        if isinstance(v, list):
+            for i in v:
+                upsert_references(i, coll, refs)
+        else:
+            upsert_references(i, coll, refs)
+
+def upsert_references(d_id, coll, refs):
+    doc = db[coll].find_one({"_id" : d_id})
+    if not doc:
+        print('Failure Finding doc in %s in upsert_references : %s' % (coll, d_id))
+    db[coll].update(
+        {"_id" : d_id},
+        {"$set" : merge_references(refs, doc)}
+        )
+
+def merge_references(new_refs, old_doc):
+    print(new_refs)
+    print(old_doc)
+    # update new_refs name
+    new_db_refs = {}
+    for ref_name in new_refs:
+        new_db_refs[('__%s__' % ref_name)] = list(new_refs[ref_name])
+    output_refs = {}
+    for ref_name in new_refs:
+        output_refs[ref_name] = old_doc.get(ref_name, []) + list(set(new_refs.get(ref_name, [])) - set(old_doc.get(ref_name, [])))
+    return output_refs
+
 def push_course_data_to_db(local_refs):
+    db_refs = {}
     # ('__%s__' % name)
-    print(json.dumps(local_refs, indent=4))
+    # print(json.dumps(local_refs, indent=4))
+    # Build DB refs
+    for coll in local_refs:
+        db_refs[coll] = []
+        for doc in local_refs[coll]:
+            db_refs[coll].append(upsert_doc(doc, coll))
+    update_references(db_refs)
+    # print(json.dumps(db_refs, indent=4))
+
+# Returns object id of document that either already exists or is created
+def upsert_doc(doc, coll_name):
+    collection = db[coll_name]
+    tar = collection.count(doc)
+    if tar == 0:
+        collection.insert(doc)
+    tar = collection.find_one(doc)
+    return tar["_id"]
 
 # Test Parsing Code
 def test_course_parsing():
