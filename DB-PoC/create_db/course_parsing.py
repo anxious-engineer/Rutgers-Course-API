@@ -25,14 +25,16 @@ db = client[test_db_name]
                 "value_mappings" : {
                     <SOC_val_1> : <NEW_API_val_1>,
                     <SOC_val_2> : <NEW_API_val_2>,
-                }
+                },
+                "augmented_keys" : [<augmented_key_1>, <augmented_key_2>],
             },
             <key_name_2> : {
                 "new_key" : <new_key>,
                 "value_mappings" : {
                     <SOC_val_1> : <NEW_API_val_1>,
                     <SOC_val_2> : <NEW_API_val_2>,
-                }
+                },
+                "augmented_keys" : [<augmented_key_1>, <augmented_key_2>],
             },
         },
     },
@@ -51,6 +53,7 @@ db = client[test_db_name]
 #         - Mapping (New Mapped Name of Data)
 #          *Key is only present if they are required*
 #           *Absent Key is equivalent to 'value_mappings : None'*
+#         - Augmented Keys (Additional names for this key)
 
 # NOTE : Keys that have values that are Arrays instead of maps,
 # Will be handled implicitly by the parser, which will test 'isinstance(val, list)'
@@ -98,10 +101,8 @@ collection_mappings = {
                     'CM' : 'Camden',
                     'OC' : 'Off Campus',
                     'ON' : 'Online'
-                }
-            },
-            "campusCode" : {
-                "new_key" : "code",
+                },
+                "augmented_keys" : ["code"]
             },
         },
     }
@@ -139,6 +140,9 @@ def parse_course_data(all_data):
                         new_key = key if not name_update_mapping.get('new_key') else name_update_mapping['new_key']
                         output_val = data[key] if not name_update_mapping.get('value_mappings') else name_update_mapping['value_mappings'].get(data[key])
                         print("\t\t %s : %s" % (new_key, output_val))
+                        if name_update_mapping.get('augmented_keys'):
+                            for augmented_key in name_update_mapping.get('augmented_keys'):
+                                print("\t\t %s : %s" % (augmented_key, data[key]))
                     else:
                         print("\t\t %s : %s" % (key, data[key]))
 
