@@ -89,7 +89,8 @@ collection_mappings = {
         "parent_keys" : ["sections", "instructors"],
         "keys" : {
             "name" : {
-                "new_key" : "name"
+                "new_key" : "name",
+                "key_mod_method" : "get_prof_last_name",
             },
         }
     },
@@ -110,6 +111,20 @@ collection_mappings = {
     }
 }
 
+
+# Mod methods
+def get_prof_last_name(key):
+    if "," in key:
+        return key.split(",")[0]
+    return key
+
+def do_nothing(key):
+    return key
+
+MOD_METHODS = {
+    "get_prof_last_name" : get_prof_last_name
+}
+
 def parse_course_data(all_data):
     all_new_course_data = {}
     for name in collection_mappings:
@@ -122,12 +137,12 @@ def parse_course_data(all_data):
             local_refs[name] = []
             # Current data we parse is always starts as just the current course json
             current_data = [course]
-            print("\t" + name)
+            # print("\t" + name)
             # Do we need to dive in?
             # Here we adjust current data based on parents
             if c_mapping.get('parent_keys'):
                 for p_key in c_mapping['parent_keys']:
-                    print("\t*%s*" % p_key)
+                    # print("\t*%s*" % p_key)
                     tmp_data = []
                     for data in current_data:
                         if isinstance(data[p_key], list):
@@ -144,6 +159,7 @@ def parse_course_data(all_data):
                     if name_update_mapping:
                         new_key = key if not name_update_mapping.get('new_key') else name_update_mapping['new_key']
                         output_val = data[key] if not name_update_mapping.get('value_mappings') else name_update_mapping['value_mappings'].get(data[key])
+                        output_val = MOD_METHODS.get(name_update_mapping.get('key_mod_method', "None"), do_nothing)(output_val)
                         new_doc[new_key] = output_val
                         # print("\t\t %s : %s" % (new_key, output_val))
                         if name_update_mapping.get('augmented_keys'):
@@ -157,7 +173,7 @@ def parse_course_data(all_data):
         push_course_data_to_db(local_refs)
 
 def update_references(relatives):
-    print("RELATIVES: %s" % relatives)
+    # print("RELATIVES: %s" % relatives)
     for coll, v in relatives.items():
         # Copy Dict
         refs = relatives.copy()
@@ -179,8 +195,8 @@ def upsert_references(d_id, coll, refs):
         )
 
 def merge_references(new_refs, old_doc):
-    print(new_refs)
-    print(old_doc)
+    # print(new_refs)
+    # print(old_doc)
     # update new_refs name
     new_db_refs = {}
     for ref_name in new_refs:
