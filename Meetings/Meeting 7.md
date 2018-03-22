@@ -1,4 +1,4 @@
-# Meeting 6
+# Meeting 7
 
 ## Updates
 
@@ -94,3 +94,15 @@ Professors:
 Need to write more complex query handlers and define structure.
 
 Determine endpoint handling (Replicate DB Project?)
+
+**Future**
+
+modularize DB Connections for Parsing and Database Creation.
+
+Implement Querying
+  - Define Query structure
+  - Define Endpoints
+
+Implement more/all collections
+
+Work-On DB update or Merging all old data.
