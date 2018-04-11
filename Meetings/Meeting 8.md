@@ -10,8 +10,6 @@ Code does not work. :(
 
 Modularization is a bigger task then I anticipated, need to think it out more.
 
-OOP vs Parameter Passing
-
 ## Future
 
 Robotics is over on Saturday. Free from anything but work.
@@ -25,7 +23,7 @@ Need to set harder goals for the next 3 weeks.
 **Query Structure**
   - Will mimic DB Project
   - Hooks written in Python
-    - Allows for support within any enpoint handler/web-server
+    - Allows for support within any endpoint handler/web-server
     - Django Compatible
     - AWS Compatible
     - Write the code once, use anywhere
