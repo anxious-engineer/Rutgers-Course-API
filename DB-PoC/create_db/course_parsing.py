@@ -183,6 +183,9 @@ class Parser(object):
                         else:
                             new_doc[key] = data[key]
                             # print("\t\t %s : %s" % (key, data[key]))
+                    for val in new_doc.keys():
+                        if type(new_doc[val]) == str:
+                            new_doc[val] = new_doc[val].strip()
                     local_refs[name].append(new_doc)
             self.push_course_data_to_db(local_refs)
         self.done += 1
