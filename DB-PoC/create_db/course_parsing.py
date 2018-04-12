@@ -4,10 +4,20 @@ sys.path.append(os.path.abspath('../'))
 from rusoc import api as soc
 import db_connect
 import json
+from threading import Thread
+import threading
 
 class Parser(object):
     def __init__(self, db):
         self.db = db
+        self.threads = []
+        self.lock = threading.Lock()
+        self.done = 0
+
+    def join(self):
+        parsed = 0
+        for t in self.threads:
+            t.join()
 
     # Mappings
     '''
@@ -124,13 +134,18 @@ class Parser(object):
         "get_prof_last_name" : get_prof_last_name
     }
 
+    def spawn_parse_thread(self, data):
+        new_thread = Thread(target = self.parse_course_data, args = (data,))
+        self.threads.append(new_thread)
+        new_thread.start()
+
     def parse_course_data(self, all_data):
         all_new_course_data = {}
         for name in Parser.collection_mappings:
             all_new_course_data[name] = []
 
         for course in all_data:
-            print(course['courseNumber'])
+            # print(course['courseNumber'])
             local_refs = {}
             for name, c_mapping in Parser.collection_mappings.items():
                 local_refs[name] = []
@@ -170,6 +185,8 @@ class Parser(object):
                             # print("\t\t %s : %s" % (key, data[key]))
                     local_refs[name].append(new_doc)
             self.push_course_data_to_db(local_refs)
+        self.done += 1
+        print('\r  %d Complete' % (self.done), end = '')
 
     def update_references(self, relatives):
         # print("RELATIVES: %s" % relatives)
@@ -185,6 +202,7 @@ class Parser(object):
                 self.upsert_references(i, coll, refs)
 
     def upsert_references(self, d_id, coll, refs):
+        # self.lock.acquire()
         doc = self.db[coll].find_one({"_id" : d_id})
         if not doc:
             print('Failure Finding doc in %s in upsert_references : %s' % (coll, d_id))
@@ -192,6 +210,7 @@ class Parser(object):
             {"_id" : d_id},
             {"$set" : self.merge_references(refs, doc)}
             )
+        # self.lock.release()
 
     def merge_references(self, new_refs, old_doc):
         # print(new_refs)
@@ -219,11 +238,13 @@ class Parser(object):
 
     # Returns object id of document that either already exists or is created
     def upsert_doc(self, doc, coll_name):
+        # self.lock.acquire()
         collection = self.db[coll_name]
         tar = collection.count(doc)
         if tar == 0:
             collection.insert(doc)
         tar = collection.find_one(doc)
+        # self.lock.release()
         return tar["_id"]
 
 # Test Parsing Code
