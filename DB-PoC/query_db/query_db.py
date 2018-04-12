@@ -19,8 +19,14 @@ def main():
         params = collect_params(coll)
         if params == {}:
             continue
+
+        sanatized_params = sanatize_params(params)
+
+        print("FINAL PARAMS:")
+        print(sanatized_params)
+
         # Query Collection
-        db_res = query_collection(coll, params)
+        db_res = query_collection(coll, sanatized_params)
         # Expand Results
         expanded_results = []
         for res in db_res:
@@ -62,5 +68,13 @@ def collect_params(coll):
         print('\r', end = '')
         return params
 
+def sanatize_params(params):
+    new_params = {}
+    for k in params.keys():
+        new_params[k] = {"$regex" : params[k], "$options" : 'i'}
+
+    return new_params
+
+    return new_params
 if __name__ == '__main__':
     main()
