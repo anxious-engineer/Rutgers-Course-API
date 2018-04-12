@@ -7,6 +7,8 @@ import json
 from threading import Thread
 import threading
 
+config = json.load(open('../config/config.json'))
+
 class Parser(object):
     def __init__(self, db):
         self.db = db
@@ -19,107 +21,24 @@ class Parser(object):
         for t in self.threads:
             t.join()
 
-    # Mappings
-    '''
-    {
-        <collection_name_1> : {
-            "parent_keys" : [
-                "<parent_key_1>",
-                "<parent_key_2>",
-                "<parent_key_3>",
-            ],
-            "keys" : {
-                <key_name_1> : {
-                    "new_key" : <new_key>,
-                    "key_mod_method" : <key_mod_method_name_1>,
-                    "value_mappings" : {
-                        <SOC_val_1> : <NEW_API_val_1>,
-                        <SOC_val_2> : <NEW_API_val_2>,
-                    },
-                    "augmented_keys" : [<augmented_key_1>, <augmented_key_2>],
-                },
-                <key_name_2> : {
-                    "new_key" : <new_key>,
-                    "key_mod_method" : <key_mod_method_name_1>,
-                    "value_mappings" : {
-                        <SOC_val_1> : <NEW_API_val_1>,
-                        <SOC_val_2> : <NEW_API_val_2>,
-                    },
-                    "augmented_keys" : [<augmented_key_1>, <augmented_key_2>],
-                },
-            },
-        },
-        ...
-    }
-    '''
-    #   - Collection Name *Required*
-    #     - Parent Keys (Location of key inside nested SOC JSON)
-    #       *Key is only present if they are required*
-    #       *Absent Key is equivalent to 'parent_keys : None'*
-    #       *In order they will be counter in tree/dict*
-    #     - Keys (SOC -> New API) *SHOULD NEVER BE NONE*
-    #       *Value is only present if they are required*
-    #       *Absent Value is equivalent to '"new_key" : None,"value_mappings" : None'*
-    #         - Name (Data Name inside SOC JSON)
-    #         - Key Mod Method (Method name that properly formats key data)
-    #         - Mapping (New Mapped Name of Data)
-    #          *Key is only present if they are required*
-    #           *Absent Key is equivalent to 'value_mappings : None'*
-    #         - Augmented Keys (Additional names for this key)
+      # - Collection Name *Required*
+      #   - Parent Keys (Location of key inside nested SOC JSON)
+      #     *Key is only present if they are required*
+      #     *Absent Key is equivalent to 'parent_keys : None'*
+      #     *In order they will be counter in tree/dict*
+      #   - Keys (SOC -> New API) *SHOULD NEVER BE NONE*
+      #     *Value is only present if they are required*
+      #     *Absent Value is equivalent to '"new_key" : None,"value_mappings" : None'*
+      #       - Name (Data Name inside SOC JSON)
+      #       - Key Mod Method (Method name that properly formats key data)
+      #       - Mapping (New Mapped Name of Data)
+      #        *Key is only present if they are required*
+      #         *Absent Key is equivalent to 'value_mappings : None'*
+      #       - Augmented Keys (Additional names for this key)
 
     # NOTE : Keys that have values that are Arrays instead of maps,
     # Will be handled implicitly by the parser, which will test 'isinstance(val, list)'
-    collection_mappings = {
-        "course" : {
-            "keys" : {
-                "courseNumber" : {
-                    "new_key" : "number",
-                },
-                "courseNotes" : {
-                    "new_key" : "notes",
-                },
-                "courseDescription" : {
-                    "new_key" : "description",
-                },
-                "synopsisUrl" : None,
-                "title" : None,
-                "preReqNotes" : None,
-                "credits" : None,
-                "expandedTitle" : None,
-            }
-        },
-        "subject" : {
-            "keys" : {
-                "subject" : {
-                    "new_key" : "number"
-                },
-            }
-        },
-        "professor" : {
-            "parent_keys" : ["sections", "instructors"],
-            "keys" : {
-                "name" : {
-                    "new_key" : "name",
-                    "key_mod_method" : "get_prof_last_name",
-                },
-            }
-        },
-        "campus" : {
-            "keys" : {
-                "campusCode" : {
-                    "new_key" : "name",
-                    "value_mappings" : {
-                        'NB' : 'New Brunswick',
-                        'NK' : 'Newark',
-                        'CM' : 'Camden',
-                        'OC' : 'Off Campus',
-                        'ON' : 'Online'
-                    },
-                    "augmented_keys" : ["code"]
-                },
-            },
-        }
-    }
+    collection_mappings = config
 
     # Mod methods
     def get_prof_last_name(key):

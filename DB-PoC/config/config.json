@@ -1,0 +1,52 @@
+
+{
+      "course" : {
+          "keys" : {
+              "courseNumber" : {
+                  "new_key" : "number"
+              },
+              "courseNotes" : {
+                  "new_key" : "notes"
+              },
+              "courseDescription" : {
+                  "new_key" : "description"
+              },
+              "synopsisUrl" : null,
+              "title" : null,
+              "preReqNotes" : null,
+              "credits" : null,
+              "expandedTitle" : null
+          }
+      },
+      "subject" : {
+          "keys" : {
+              "subject" : {
+                  "new_key" : "number"
+              }
+          }
+      },
+      "professor" : {
+          "parent_keys" : ["sections", "instructors"],
+          "keys" : {
+              "name" : {
+                  "new_key" : "name",
+                  "key_mod_method" : "get_prof_last_name"
+              }
+          }
+      },
+      "campus" : {
+          "keys" : {
+              "campusCode" : {
+                  "new_key" : "name",
+                  "value_mappings" : {
+                      "NB" : "New Brunswick",
+                      "NK" : "Newark",
+                      "CM" : "Camden",
+                      "OC" : "Off Campus",
+                      "ON" : "Online"
+                  },
+                "augmented_keys" : ["code"]
+              }
+          }
+      }
+  }
