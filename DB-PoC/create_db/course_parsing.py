@@ -96,7 +96,7 @@ class Parser(object):
                             new_doc[new_key] = output_val
                             # print("\t\t %s : %s" % (new_key, output_val))
                             if name_update_mapping.get('augmented_keys'):
-                                for augmented_key in name_update_mapping.get('augmented_keys'):
+                                for augmented_key in name_update_mapping.get('augmented_keys').keys():
                                     new_doc[augmented_key] = data[key]
                                     # print("\t\t %s : %s" % (augmented_key, data[key]))
                         else:

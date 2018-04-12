@@ -14,3 +14,6 @@
         - *Key is only present if they are required*
         - *Absent Key is equivalent to 'value_mappings : None'*
       - Augmented Keys (Additional names for this key)
+        - Name
+        - Query Type <See Query Types>
+      - Query Type (Data Type used for querying) <See Query Types>

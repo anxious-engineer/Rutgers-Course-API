@@ -3,25 +3,39 @@
       "course" : {
           "keys" : {
               "courseNumber" : {
-                  "new_key" : "number"
+                  "new_key" : "number",
+                  "query_type" : ""
               },
               "courseNotes" : {
-                  "new_key" : "notes"
+                  "new_key" : "notes",
+                  "query_type" : ""
               },
               "courseDescription" : {
-                  "new_key" : "description"
+                  "new_key" : "description",
+                  "query_type" : ""
               },
-              "synopsisUrl" : null,
-              "title" : null,
-              "preReqNotes" : null,
-              "credits" : null,
-              "expandedTitle" : null
+              "synopsisUrl" : {
+                "query_type" : ""
+              },
+              "title" : {
+                "query_type" : ""
+              },
+              "preReqNotes" : {
+                "query_type" : ""
+              },
+              "credits" : {
+                "query_type" : ""
+              },
+              "expandedTitle" : {
+                "query_type" : ""
+              }
           }
       },
       "subject" : {
           "keys" : {
               "subject" : {
-                  "new_key" : "number"
+                  "new_key" : "number",
+                  "query_type" : ""
               }
           }
       },
@@ -30,7 +44,8 @@
           "keys" : {
               "name" : {
                   "new_key" : "name",
-                  "key_mod_method" : "get_prof_last_name"
+                  "key_mod_method" : "get_prof_last_name",
+                  "query_type" : ""
               }
           }
       },
@@ -45,7 +60,10 @@
                       "OC" : "Off Campus",
                       "ON" : "Online"
                   },
-                "augmented_keys" : ["code"]
+                "augmented_keys" : {
+                  "code" : ""
+                },
+                "query_type" : ""
               }
           }
       }
