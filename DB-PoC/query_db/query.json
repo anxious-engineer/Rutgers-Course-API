@@ -2,5 +2,13 @@
   "string" : {
     "$regex" : "",
     "$options": "i"
+  },
+  "paragraph" : {
+    "$regex" : "",
+    "$options": "i"
+  },
+  "numeric" : {
+    "$eq" : 0,
+    "$options": "i"
   }
 }

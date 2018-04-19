@@ -2,6 +2,7 @@
 import db_connect
 import expansion
 import json
+import query
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
@@ -35,10 +36,7 @@ print(json.dumps(collection_params, indent=4))
 
 def main():
     # Connect to Mongo Cluster
-    client = db_connect.get_client()
-    db_name = 'test'
-
-    db = client[db_name]
+    db = db_connect.get_test_db()
 
     endpoints = db.collection_names()
 
@@ -50,13 +48,8 @@ def main():
         if params == {}:
             continue
 
-        sanatized_params = sanatize_params(coll.name, params)
-
-        print("FINAL PARAMS:")
-        print(sanatized_params)
-
         # Query Collection
-        db_res = query_collection(coll, sanatized_params)
+        db_res = query.query(e, params)
         # Expand Results
         expanded_results = []
         for res in db_res:
@@ -81,7 +74,8 @@ def collect_params(coll_name):
                 field = input("Enter a Valid Field: ")
                 print(CURSOR_UP_ONE + ERASE_LINE, end = '')
                 print( collection_params[coll_name].keys() )
-                validField = field in collection_params[coll_name].keys() and field not in params.keys()
+                validField = field in collection_params[coll_name].keys()
+                validField = validField and field not in params.keys()
             validValue = False
             value = None
             while not validValue:
