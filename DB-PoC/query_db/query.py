@@ -1,4 +1,5 @@
 import db_connect
+import handle
 
 def query(coll_name, params):
     clean_params = get_sanatization_method(coll_name)(params)
@@ -20,8 +21,8 @@ def sanatize_default(params):
     # Santization
     new_params = {}
     for k in params.keys():
-        new_params[k] = {"$regex" : params[k], "$options" : 'i'}
+        new_params[k] = handle.get_handle_method(k)(params[k])
     return new_params
 
-def sanatize_string():
+def sanatize_course():
     pass
