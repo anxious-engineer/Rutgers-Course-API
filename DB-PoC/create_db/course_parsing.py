@@ -7,7 +7,7 @@ import json
 from threading import Thread
 import threading
 
-config = json.load(open('../config/config.json'))
+config = json.load(open('config.json'))
 
 class Parser(object):
     def __init__(self, db):

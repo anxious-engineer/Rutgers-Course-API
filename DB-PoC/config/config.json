@@ -4,30 +4,30 @@
           "keys" : {
               "courseNumber" : {
                   "new_key" : "number",
-                  "query_type" : ""
+                  "query_type" : "numeric"
               },
               "courseNotes" : {
                   "new_key" : "notes",
-                  "query_type" : ""
+                  "query_type" : "paragraph"
               },
               "courseDescription" : {
                   "new_key" : "description",
-                  "query_type" : ""
+                  "query_type" : "paragraph"
               },
               "synopsisUrl" : {
-                "query_type" : ""
+                "query_type" : "paragraph"
               },
-              "title" : {
-                "query_type" : ""
+              "string" : {
+                "query_type" : "string"
               },
               "preReqNotes" : {
-                "query_type" : ""
+                "query_type" : "paragraph"
               },
               "credits" : {
-                "query_type" : ""
+                "query_type" : "numeric"
               },
-              "expandedTitle" : {
-                "query_type" : ""
+              "expandedstring" : {
+                "query_type" : "string"
               }
           }
       },
@@ -35,7 +35,8 @@
           "keys" : {
               "subject" : {
                   "new_key" : "number",
-                  "query_type" : ""
+                  "query_type" : "numeric",
+                  "_comment" : "^Should this be numeric?"
               }
           }
       },
@@ -45,25 +46,25 @@
               "name" : {
                   "new_key" : "name",
                   "key_mod_method" : "get_prof_last_name",
-                  "query_type" : ""
+                  "query_type" : "string"
               }
           }
       },
       "campus" : {
           "keys" : {
               "campusCode" : {
-                  "new_key" : "name",
-                  "value_mappings" : {
-                      "NB" : "New Brunswick",
-                      "NK" : "Newark",
-                      "CM" : "Camden",
-                      "OC" : "Off Campus",
-                      "ON" : "Online"
-                  },
-                "augmented_keys" : {
-                  "code" : ""
+                "new_key" : "name",
+                "value_mappings" : {
+                    "NB" : "New Brunswick",
+                    "NK" : "Newark",
+                    "CM" : "Camden",
+                    "OC" : "Off Campus",
+                    "ON" : "Online"
                 },
-                "query_type" : ""
+                "augmented_keys" : {
+                  "code" : "string"
+                },
+                "query_type" : "string"
               }
           }
       }
