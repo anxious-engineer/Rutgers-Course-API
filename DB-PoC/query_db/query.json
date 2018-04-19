@@ -1,0 +1,6 @@
+{
+  "string" : {
+    "$regex" : "",
+    "$options": "i"
+  }
+}
