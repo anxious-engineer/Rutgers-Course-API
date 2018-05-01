@@ -53,7 +53,7 @@ def main():
         # Expand Results
         expanded_results = []
         for res in db_res:
-            expanded_res = expansion.expand(res)
+            expanded_res = query.expand(res)
             expanded_results.append(expanded_res)
 
         print(json.dumps(expanded_results, indent=4))
