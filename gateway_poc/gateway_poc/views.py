@@ -22,5 +22,4 @@ def handle_method_request(request):
         expanded_res = query.expand(res)
         expanded_results.append(expanded_res)
 
-    # If no hook exists
     return HttpResponse(json.dumps(expanded_results, indent=4), content_type="application/json")
