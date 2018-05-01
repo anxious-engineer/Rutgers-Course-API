@@ -1,0 +1,34 @@
+{
+    "<collection_name_1>" : {
+        "parent_keys" : [
+            "<parent_key_1>",
+            "<parent_key_2>",
+            "<parent_key_3>"
+        ],
+        "keys" : {
+            "<key_name_1>" : {
+                "new_key" : "<new_key>",
+                "key_mod_method" : "<key_mod_method_name_1>",
+                "value_mappings" : {
+                    "<SOC_val_1>" : "<NEW_API_val_1>",
+                    "<SOC_val_2>" : "<NEW_API_val_2>"
+                },
+                "augmented_keys" : ["<augmented_key_1>", "<augmented_key_2>"],
+                "query_type" : ""
+            },
+            "<key_name_2>" : {
+                "new_key" : "<new_key>",
+                "key_mod_method" : "<key_mod_method_name_1>",
+                "value_mappings" : {
+                    "<SOC_val_1>" : "<NEW_API_val_1>",
+                    "<SOC_val_2>" : "<NEW_API_val_2>"
+                },
+                "augmented_keys" : {
+                    "<augmented_key_1>" : "<augmented_key_1_query_type>",
+                    "<augmented_key_2>" : "<augmented_key_2_query_type>"
+                },
+                "query_type" : ""
+            }
+        }
+    }
+}

@@ -1,0 +1,1 @@
+mongo "mongodb://poc-shard-00-00-5vbvd.mongodb.net:27017,poc-shard-00-01-5vbvd.mongodb.net:27017,poc-shard-00-02-5vbvd.mongodb.net:27017/test?replicaSet=PoC-shard-0" --ssl --authenticationDatabase admin --username admin --password makingausableapi

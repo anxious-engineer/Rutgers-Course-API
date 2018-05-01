@@ -1,0 +1,14 @@
+{
+  "<Query Type_1>" : {
+    "<Mongo_Key_1" : "<Query_Value_1>"
+  },
+  "<Query Type_2>" : {
+    "<Mongo_Key_1" : "<Query_Value_1>"
+  },
+  "<Query Type_3>" : {
+    "<Mongo_Key_1" : "<Query_Value_1>"
+  },
+  "<Query Type_4>" : {
+    "<Mongo_Key_1" : "<Query_Value_1>"
+  }
+}
