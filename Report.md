@@ -18,6 +18,18 @@ The aim of my project (currently named the Rutgers Course API), is to overcome a
 
 ### Design
 
+This project has 3 main components:
+- Database
+- Query Handler
+- Request Handler
+
+
+For the database, MongoDB was chosen because of it's loose and flexible No-SQL collection "schema" and because of it's powerful and easy to use querying system.
+
+Interactions between API endpoints and the database are handler by a Python query module. The query and loader modules using the Pymongo module to interact with MongoDB.
+
+And endpoint requests are handled by either AWS cloud architecture or by a Django web server. The API can easily be transitioned between either of the two request handlers are because they both provide easy mechanisms for interfacing with the Python query module.
+
 ### PoC
 
 The first step of my work on this project was to complete a very rough proof of concept for the API. This allowed me to get a basic understanding of the technologies I wanted to use.
@@ -48,7 +60,7 @@ With the basic proof of concept completed with the use of the desired technologi
 
 All work and source code for this stage can be found in the `Database-Design/` directory.
 
-## Database Design
+### Database Design
 
 The next step was to design the structure of the back-end database that the new API will query from.
 
@@ -60,9 +72,75 @@ But, we want to achieve this accessibility of data without creating lots of dupl
 
 So at the database level in the **Course** collection: credits, description, title, number are stored as fields, while object id's for the documents that hold the names of the professors for the corresponding courses are stored in \_\_reference\_\_ fields.
 
-This means that this related data is not directly accessible and therefore doesn't need to be stored in multiple locations in the database. Instead if related data needs to be accessed the unique object id can be used to find the record and "expand" the data if the user requests it in their query results. 
+This means that this related data is not directly accessible and therefore doesn't need to be stored in multiple locations in the database. Instead if related data needs to be accessed the unique object id can be used to find the record and "expand" the data if the user requests it in their query results.
 
-## DB-PoC
+### DB-PoC
 
+The implementation of the "schema" described above was developed in such a way that modifications and updates the any part of the design could be modular and would require modifications to only one file.
 
-## Query-Dsign
+In order to achieve this goal, the database loader starts with a JSON config file.
+
+Example:
+```JSON
+{
+    "<collection_name_1>" : {
+        "parent_keys" : [
+            "<parent_key_1>",
+            "<parent_key_2>",
+            "<parent_key_3>"
+        ],
+        "keys" : {
+            "<key_name_1>" : {
+                "new_key" : "<new_key>",
+                "key_mod_method" : "<key_mod_method_name_1>",
+                "value_mappings" : {
+                    "<SOC_val_1>" : "<NEW_API_val_1>",
+                    "<SOC_val_2>" : "<NEW_API_val_2>"
+                },
+                "augmented_keys" : ["<augmented_key_1>", "<augmented_key_2>"],
+                "query_type" : ""
+            },
+            "<key_name_2>" : {
+                "new_key" : "<new_key>",
+                "key_mod_method" : "<key_mod_method_name_1>",
+                "value_mappings" : {
+                    "<SOC_val_1>" : "<NEW_API_val_1>",
+                    "<SOC_val_2>" : "<NEW_API_val_2>"
+                },
+                "augmented_keys" : {
+                    "<augmented_key_1>" : "<augmented_key_1_query_type>",
+                    "<augmented_key_2>" : "<augmented_key_2_query_type>"
+                },
+                "query_type" : ""
+            }
+        }
+    }
+}
+
+```
+
+The config file is a collection of....collections.
+
+Each Mongo collection is a key in the outer most layer of the JSON. Each of these collections have two things. First, a list of "parent keys", which are the keys, in order, that must be followed from the root of a single SOC JSON. When these parent keys followed in order, they lead to the JSON level where the data that belongs to a collection exists.
+
+The second component of a collection at this level are the collection's keys. Each collection has one or more "keys" which translate to the attributes of the documents that will be stored in the Mongo collection.
+
+Each "key" is itself a JSON Object. Each "key_name" is the original name of the attribute as it is stored in the SOC JSON Object. "new_key" represents the new name of this attribute in Mongo Collection and how it will be queried/reference in the new API.
+
+"value_mappings" allows the original value of the attribute in the SOC JSON to be mapped to a new/different value in the new API. This is used for example, when mapping Campus Codes to Campus Names.
+
+"key_mod_method" is the name of a method inside of course_parsing.py that if implemented will be invoked to modify the attribute value in some other manner that can't directly be translated by a configuration file.
+
+"augmented_keys" serve as a way to map the same attribute to multiple different names. This is used for example, when mapping Campus Codes AND Campus Names.
+
+"query_type" & "augmented_key_query_type" define how the attribute values will be handled when queried from the collection.
+
+This configuration file is parsed by both the database creation and query modules. Updates and additions to the schema and behavior of the API can all be made an immediately reflected by the API just by modifying this single file.
+
+Under this system no changes need to be made to the underlying source code in order to add another collection to the database.
+
+### Query-Design
+
+A simple command line query tool was developed to provide the proof of concept for this schema design and configuration system.
+
+### gateway-poc
