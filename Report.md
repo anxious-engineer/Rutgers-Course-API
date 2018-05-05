@@ -52,7 +52,7 @@ __Goal__ : Recreate current SOC API, with a server-less architecture.
 
 *Step 7* - Deploy PoC to production.
 
-As of writing this, the endpoint for this PoC API that pushes the same functionality as the current SOC API, exists at the following url:
+As of writing this, the endpoint for this PoC API that pushes the same functionality as the current SOC API, exists at the following URL:
 
 https://7cpgmnapaf.execute-api.us-east-1.amazonaws.com/PoC?subject=198&semester=12018&campus=NB&level=UG
 
@@ -143,4 +143,109 @@ Under this system no changes need to be made to the underlying source code in or
 
 A simple command line query tool was developed to provide the proof of concept for this schema design and configuration system.
 
+Both endpoint handlers, AWS and Django, conveniently parse URL parameters into a python dictionary, where each key is an attribute and the value is the query value.
+
+The param dictionary makes it very easy for the query handler to interpret the desired query.
+
+In order to handle each query type differently, the query handler will "sanatize" (just now writing this report, I'm realizing I spelled it wrong) each parameter based on the query type's behavior.
+
+```Python
+def sanatize_params(coll_name, params):
+    # Santization
+    new_params = {}
+    for k in params.keys():
+        query_type = get_query_type(coll_name, k)
+        new_params[k] = get_sanatize_method(query_type)(params[k])
+    return new_params
+
+# Find sanatize method in the query module
+def get_sanatize_method(key):
+    name = "sanatize_" + str(key)
+    print("Looking for %s" % (name))
+    if name in globals().keys():
+        return globals()[name]
+    else:
+        return sanatize_default
+
+def sanatize_string(data):
+    if type(data) != str:
+        data = str(data)
+    return {"$regex" : data, "$options" : 'i'}
+```
+
+The `sanatize_params` iterates over each parameter in the dictionary and looks for a sanatization method for the parameters `query_type`. It does this by calling the `get_sanatize_method` which uses Python `globals()` to look inside `sanatize.py` for a method with the parameter name based to it. If no method `sanatize_parameter` is found, `sanatize_default` is called instead.
+
+The output of `sanatize_params` is a MongoDB query dictionary, so the output of this method can directly be as a query to the Pymongo interface. This is all handled inside of the `query` method inside of `query.py`.
+
+The results of the direct MongoDB query are not ready to be returned as the results of the API call, because the resulting documents will contain ObjectIDs, which should not be exposed to anyone external to the query handler.
+
+```JSON
+{
+        "_id" : ObjectId("5acfb1a4fd4b6b1647d0dd7f"),
+        "name" : "CENTENO",
+        "__course__" : [
+                ObjectId("5acfb1a4fd4b6b1647d0dd7e"),
+                ObjectId("5acfb1affd4b6b1647d0ddad")
+        ],
+        "__subject__" : [
+                ObjectId("5acfb1a0fd4b6b1647d0dd72")
+        ],
+        "__campus__" : [
+                ObjectId("5acfb1a0fd4b6b1647d0dd74")
+
+        ]
+}
+```
+
+These ObjectIDs are references to documents in other collections that are linked to the data in the resulting documents. There are two options to handle these references: remove or expand them. Removing them is simple by just removing any keys that have names like so: `__name__`, inside of the result dictionary.
+
+The other option is to expand the document data of the documents referenced by the ObjectIDs. This is handled by the `expand` method in `query.py`. Which will query MongoDB for the document with the ObjectID and replace the ObjectID with the non-reference document attributes.
+
+```JSON
+{
+    "name": "CENTENO",
+
+    "__course__": [
+        {
+            "number": "112",
+            "notes": null,
+            "description": null,
+            "synopsisUrl": "http://www.cs.rutgers.edu/undergraduate/courses/",
+            "title": "DATA STRUCTURES",
+            "preReqNotes": "((01:198:111  or 14:332:252 ) and (01:640:135 ))
+            <em> OR </em> ((01:198:111  or 14:332:252 ) and (01:640:151 ))
+            <em> OR </em> ((01:198:111  or 14:332:252 ) and (01:640:153 ))
+            <em> OR </em> ((01:198:111  or 14:332:252 ) and (01:640:191 ))",
+            "credits": 4,
+            "expandedTitle": null
+        },
+        {
+            "number": "494",
+            "notes": null,
+            "description": null,
+            "synopsisUrl": "http://www.cs.rutgers.edu/undergraduate/courses/",
+            "title": "INDEP STUDY COMP SCI",
+            "preReqNotes": null,
+            "credits": null,
+            "expandedTitle": null
+        }
+    ],
+    "__subject__": {
+        "number": "198"
+    },
+    "__campus__": {
+        "name": "New Brunswick",
+        "code": "NB"
+    }
+}
+```
+
+Once the ObjectIDs are removed or expanded the results dictionary are ready to be returned from the API call to the user.
+
 ### gateway-poc
+
+This stage was a simple implementation of the query handler behind a Django web server to handle the URL requests.
+
+The completion of this stage provide a final proof of concept for the API.
+
+## Conclusion
